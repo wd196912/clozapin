@@ -2,7 +2,7 @@
 
 Analysis code for the manuscript:
 
-**Pneumonia and Fatal Outcomes Associated with Clozapine: A Pharmacovigilance Study Using the FDA Adverse Event Reporting System** (manuscript version v11, 2026-08-13)
+**Pneumonia and Fatal Outcomes Associated with Clozapine: A Pharmacovigilance Study Using the FDA Adverse Event Reporting System** (manuscript version v11, revised 2026-08-14)
 
 ## Data Provenance
 
@@ -34,8 +34,9 @@ OUTC definition: 309/1,305 cases (23.7%) fatal.
 | `R/02_fatal_analysis.R` | Corrected fatal-outcome analysis (OUTC DE): overall fatality, age/sex/weight comparisons, per-PT and country fatality, multivariable model m4 (C-statistic, Hosmer-Lemeshow), dose subset m3, DE-or-LT sensitivity | Table 3; Figures 4–5 data |
 | `R/03_table1_counts.R` | Table 1 cell values (demographics × fatal status) | Table 1 |
 | `R/04_dose_response.R` | Dose standardization (mg/d), RCS dose–aspiration modeling, threshold tests, age/sex subgroup analyses | Figure 3; Supplementary Figure S1 data |
+| `R/05_sensitivity_analyses.R` | Sensitivity analyses of the fatal-outcome model m4: exclusion of imputed years, median-year imputation, categorical year, no-age and age missing-indicator models, multiple imputation by chained equations (mice, m = 10) for age and sex, caseid-level analysis, age structure by region, crude-vs-adjusted Europe contrast; calibration plot | Supplementary Table S3; Supplementary Figure S2 |
 
-Required R packages: `data.table`, `dplyr`, `pROC`, `ResourceSelection` (versions in manuscript Section 2.9). R 4.6.0.
+Required R packages: `data.table`, `dplyr`, `pROC`, `ResourceSelection`, `mice` (3.19.0) (versions in manuscript Section 2.9). R 4.6.0.
 
 ### Python scripts
 
@@ -57,3 +58,4 @@ write to `F:/clazpin/manuscript/analysis/figures/` (figures) and
 - Denominators: clozapine PS 45,749 DRUG records → 44,055 unique reports (1,694 duplicate drug records across 985 reports); risperidone 15,130; olanzapine 12,701; clozapine pulmonary-infection cases 1,305.
 - Fatal analysis: 309/1,305 (23.7%); multivariable model m4: age OR 1.90 (95% CI 1.64–2.19), aspiration pneumonia OR 2.40 (1.58–3.66), male sex 0.99 (0.67–1.45), Europe 0.75 (0.52–1.10), year 0.97 (0.90–1.04); C-statistic 0.774 (0.735–0.812); Hosmer-Lemeshow χ² = 11.38, df = 8, p = 0.181.
 - Dose–fatal: OR per 100 mg/d = 0.96 (0.84–1.11); dose subset fatality 89/405 (22.0%) vs no-dose 220/900 (24.4%).
+- Sensitivity analyses (Supplementary Table S3): complete-case m4 on 797 cases (184 fatal events); excluding imputed years 566 (138); median-year imputation 797 (184); MICE m = 10 pooled n = 1,305 (309); model without age 1,260 (303); age missing-indicator 1,260 (303); caseid-level 707 (171). All estimates consistent with the primary analysis. Caseid-level fatality 294/1,162 (25.3%) vs primaryid-level 23.7%.

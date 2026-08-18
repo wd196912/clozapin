@@ -30,7 +30,7 @@ boxes = [
     (5, 9.2, 'FAERS ASCII database\n2022Q1 – 2025Q4\nAll reports', 'lightgray'),
     (5, 7.8, 'Clozapine primary suspect (PS) DRUG records\nN = 45,749', 'white'),
     (5, 6.4, 'Unique reports after de-duplication\nN = 44,055\n(1,694 duplicate drug records removed)', 'white'),
-    (5, 5.0, 'Pulmonary infection PTs\n(17 MedDRA PTs)\nN = 1,305 unique reports', 'white'),
+    (5, 5.0, 'Pulmonary infection PTs\n(26 MedDRA PTs)\nN = 1,305 unique reports', 'white'),
     (2.5, 3.4, 'Signal Detection Analysis\nClozapine vs Risperidone\n17 PTs assessed', '#e8f5e9'),
     (7.5, 3.4, 'Fatal Outcome Analysis\n309 fatal / 996 non-fatal\nMultivariable logistic regression', '#e3f2fd'),
     (2.5, 1.8, 'Excluded: duplicate drug records\nN = 1,694', '#ffebee'),
@@ -65,36 +65,52 @@ plt.close()
 print('[OK] Fig 1: Flowchart saved')
 
 # ============================================================
-# Figure 2 — Signal Detection Forest Plot
+# Figure 2 — Signal Detection Forest Plot (composite endpoint + new rule)
 # ============================================================
+# tuple: (label, ROR, CI low, CI high, IC, IC025, risperidone n)
 signal_data = [
-    ("Lower respiratory tract infection", 81.83, 11.48, 583.38, 0.419),
-    ("Pneumonia", 3.35, 2.64, 4.25, 0.283),
-    ("Pneumonia aspiration", 1.80, 1.28, 2.52, 0.173),
-    ("Upper respiratory tract infection", 4.64, 1.10, 19.51, 0.316),
-    ("COVID-19 pneumonia", 4.29, 1.02, 18.13, 0.308),
-    ("Pneumonia bacterial", 1.37, 0.39, 4.87, 0.100),
-    ("Pneumonia viral", None, None, None, 0.393),
-    ("Pneumonitis", None, None, None, 0.412),
-    ("Empyema", None, None, None, 0.410),
-    ("Pulmonary tuberculosis", None, None, None, None),
+    ("Composite pulmonary infection endpoint (primary)", 3.58, 2.96, 4.34, 0.291, 0.168, 115),
+    ("Pneumonia spectrum (subgroup)", 2.94, 2.42, 3.58, 0.264, 0.129, 114),
+    ("Non-pneumonia lower respiratory tract infection (subgroup)", None, None, None, 0.419, 0.138, 1),
+    ("Special/other pulmonary infection terms (subgroup)", None, None, None, 0.385, 0.029, 4),
+    ("Pneumonia", 3.35, 2.64, 4.25, 0.283, 0.127, 75),
+    ("Pneumonia aspiration", 1.80, 1.28, 2.52, 0.173, -0.112, 40),
+    ("Lower respiratory tract infection", None, None, None, 0.419, 0.138, 1),
+    ("Upper respiratory tract infection", None, None, None, 0.316, -0.492, 2),
+    ("COVID-19 pneumonia", None, None, None, 0.308, -0.530, 2),
+    ("Pneumonia bacterial", None, None, None, 0.100, -1.051, 3),
+    ("Respiratory tract infection", None, None, None, 0.421, -0.170, 0),
+    ("Pneumonitis", None, None, None, 0.412, -0.620, 0),
+    ("Empyema", None, None, None, 0.410, -0.686, 0),
+    ("Pneumonia klebsiella", None, None, None, 0.330, -2.357, 0),
+    ("Pneumonia viral", None, None, None, 0.393, -1.177, 0),
+    ("Respiratory tract infection viral", None, None, None, 0.330, -2.357, 0),
+    ("Pneumonia influenzal", None, None, None, 0.357, -1.926, 0),
+    ("Pneumonia staphylococcal", None, None, None, 0.330, -2.357, 0),
+    ("Pulmonary tuberculosis", None, None, None, 0.388, -1.297, 0),
+    ("Idiopathic interstitial pneumonia", None, None, None, 0.330, -2.357, 0),
+    ("Lung abscess", None, None, None, 0.388, -1.297, 0),
+    ("Other pulmonary infection terms (9 additional PTs)", None, None, None, 0.409, -0.724, 0),
 ]
 
-fig, ax = plt.subplots(1, 1, figsize=(9, 5.5))
+fig, ax = plt.subplots(1, 1, figsize=(9, 8))
 y_positions = list(range(len(signal_data)))
 pt_labels = [s[0] for s in signal_data]
 rors = [s[1] for s in signal_data]
 ci_low = [s[2] for s in signal_data]
 ci_high = [s[3] for s in signal_data]
 
+# new rule: positive = IC025 > 0 AND comparator events >= 5; ROR reported iff n >= 5
 colors = []
-for i, s in enumerate(signal_data):
-    if s[1] is not None and s[2] is not None:
-        colors.append('#c62828' if s[2] > 1 and s[4] is not None and s[4] > 0 else '#1565c0')
+for s in signal_data:
+    _, ror, _, _, ic, ic025, n_risp = s
+    if ror is not None and ic025 > 0 and n_risp >= 5:
+        colors.append('#c62828')  # positive
+    elif ror is not None:
+        colors.append('#1565c0')  # ROR reported, not positive
     else:
-        colors.append('#9e9e9e')
+        colors.append('#9e9e9e')  # ROR not reported (comparator < 5)
 
-# Plot ROR with CI
 for i, (ror, lo, hi, col) in enumerate(zip(rors, ci_low, ci_high, colors)):
     if ror is not None and lo is not None:
         ax.errorbar(np.log(ror), i, xerr=[[np.log(ror/lo)], [np.log(hi/ror)]],
@@ -102,40 +118,33 @@ for i, (ror, lo, hi, col) in enumerate(zip(rors, ci_low, ci_high, colors)):
     else:
         ax.plot(0, i, 'X', color='#9e9e9e', markersize=8, markeredgewidth=2)
 
-# Reference line
 ax.axvline(0, color='gray', linestyle='--', alpha=0.7)
 
-# ROR labels
-for i, (ror, lo, hi, col) in enumerate(zip(rors, ci_low, ci_high, colors)):
-    if ror is not None and ror > 50:
-        ror_label = f'ROR={ror:.0f}'
-    elif ror is not None:
-        ror_label = f'ROR={ror:.2f}'
-    else:
-        ror_label = 'ROR=Inf†'
-
-    offset = 0.35 if ror and ror > 10 else 0.2
-    ax.text(np.log(ror) + offset if ror else offset, i + 0.25,
-            ror_label, fontsize=7, va='bottom', color=col, weight='bold')
-
-# Also annotate IC for inf RORs
 for i, s in enumerate(signal_data):
-    if s[1] is None and s[4] is not None:
-        ax.text(0.5, i - 0.25, f'IC={s[4]:.3f}', fontsize=7, color='#9e9e9e')
+    _, ror, _, _, ic, ic025, _ = s
+    if ror is not None:
+        ror_label = f'ROR={ror:.2f}'
+        ax.text(np.log(ror) + 0.2, i + 0.25, ror_label, fontsize=7,
+                va='bottom', color=colors[i], weight='bold')
+    else:
+        ax.text(0.5, i + 0.25, 'ROR NR†', fontsize=7, va='bottom',
+                color='#9e9e9e')
+        ax.text(0.5, i - 0.28, f'IC={ic:.3f} (IC$_{{025}}$={ic025:.3f})',
+                fontsize=7, color='#9e9e9e')
 
 ax.set_yticks(y_positions)
 ax.set_yticklabels(pt_labels, fontsize=9)
+ax.get_yticklabels()[0].set_fontweight('bold')
 ax.set_xlabel('ln(ROR)', fontsize=10)
-ax.set_title('Figure 2. Disproportionality Analysis: Clozapine vs Risperidone\nPulmonary Infection Preferred Terms in FAERS (2022–2025)',
+ax.set_title('Figure 2. Disproportionality Analysis: Clozapine vs Risperidone\nComposite Pulmonary Infection Endpoint, Subgroups, and Preferred Terms in FAERS (2022–2025)',
              fontsize=13, weight='bold')
 ax.invert_yaxis()
 
-# Legend
 from matplotlib.lines import Line2D
 legend_elements = [
-    Line2D([0], [0], marker='o', color='w', markerfacecolor='#c62828', markersize=10, label='Positive Signal (IC > 0)'),
-    Line2D([0], [0], marker='o', color='w', markerfacecolor='#1565c0', markersize=10, label='No Signal'),
-    Line2D([0], [0], marker='X', color='#9e9e9e', markersize=8, label='ROR=Inf (Zero-cell in comparator)'),
+    Line2D([0], [0], marker='o', color='w', markerfacecolor='#c62828', markersize=10, label='Positive Signal (IC$_{025}$ > 0 and ≥5 comparator events)'),
+    Line2D([0], [0], marker='o', color='w', markerfacecolor='#1565c0', markersize=10, label='ROR Reported, Not Positive'),
+    Line2D([0], [0], marker='X', color='#9e9e9e', markersize=8, label='ROR Not Reported (<5 comparator events; IC only)'),
 ]
 ax.legend(handles=legend_elements, loc='lower right', fontsize=8)
 

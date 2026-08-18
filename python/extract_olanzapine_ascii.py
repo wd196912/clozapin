@@ -38,15 +38,22 @@ EXCLUDE_KEYWORDS = re.compile(
     re.IGNORECASE
 )
 
-# Pulmonary infection PTs (matching the clozapine manuscript signal detection PT list)
+# Pulmonary infection PTs (26-PT screening list, matching the clozapine manuscript)
 PULMONARY_PTS_LOWER = {
     pt.lower() for pt in [
+        # 17 PTs (manuscript screening list)
         "pneumonia", "pneumonia aspiration", "lower respiratory tract infection",
         "upper respiratory tract infection", "covid-19 pneumonia",
         "respiratory tract infection", "pneumonia bacterial", "pneumonia viral",
-        "pneumonitis", "empyema", "pulmonary tuberculosis",
+        "pneumonitis", "empyema", "idiopathic interstitial pneumonia",
+        "lung abscess", "pulmonary tuberculosis",
         "pneumonia klebsiella", "respiratory tract infection viral",
         "pneumonia influenzal", "pneumonia staphylococcal",
+        # 9 additional PTs present in the clozapine cohort
+        "pneumonia necrotising", "pneumonia anthrax", "pulmonary sepsis",
+        "acute interstitial pneumonitis", "atypical pneumonia",
+        "eosinophilic pneumonia", "hypersensitivity pneumonitis",
+        "organising pneumonia", "pleural infection",
     ]
 }
 
@@ -222,24 +229,28 @@ def main():
         sex = demo.get("sex", "Unknown") or "Unknown"
         sex_counts[sex] += 1
 
-    # ── Count pulmonary infection PTs (per primaryid, deduplicated) ──
+    # ── Count pulmonary infection PTs (report level: unique primaryid per PT) ──
     pt_counts = defaultdict(int)
     pulmonary_pids = set()
+    pts_by_pid = {}
     for pid in dedup_pids:
-        pts_for_pid = all_reac.get(pid, [])
+        pts_for_pid = sorted(set(all_reac.get(pid, [])))
         if pts_for_pid:
             pulmonary_pids.add(pid)
+            pts_by_pid[pid] = pts_for_pid
         for pt in pts_for_pid:
             pt_counts[pt] += 1
 
     # ── Summary ──
     total_ps = len(dedup_pids)
+    total_ps_primaryid = len(all_demo)
     total_pulm = len(pulmonary_pids)
 
     print(f"\n{'='*70}")
     print("RESULTS: Olanzapine FAERS ASCII Extraction (2022Q1–2025Q4)")
     print(f"{'='*70}")
     print(f"Total olanzapine PS reports (deduplicated): {total_ps}")
+    print(f"Total olanzapine PS primaryids (report level): {total_ps_primaryid}")
     print(f"Pulmonary infection reports:                {total_pulm}")
     print(f"Non-pulmonary reports:                      {total_ps - total_pulm}")
     print(f"\nPer-quarter:")
@@ -263,12 +274,15 @@ def main():
 
     output = {
         "source": "FAERS ASCII quarterly files (2022Q1–2025Q4)",
-        "extraction_method": "case-insensitive drug name matching, PS-only, caseid+caseversion dedup",
+        "extraction_method": "case-insensitive drug name matching, PS-only",
         "total_ps_reports": total_ps,
+        "total_ps_primaryid_level": total_ps_primaryid,
         "total_pulmonary_reports": total_pulm,
         "duplicates_removed": dup_count,
         "quarter_counts": {q: c for q, c in quarter_counts},
         "pt_counts": dict(pt_counts),
+        "pts_by_pid": pts_by_pid,
+        "pts_by_pid_all": {pid: sorted(set(pts)) for pid, pts in all_reac.items()},
         "country_counts": dict(country_counts),
         "sex_counts": dict(sex_counts),
         "pulmonary_pts_queried": sorted(PULMONARY_PTS_LOWER),
@@ -280,10 +294,11 @@ def main():
     print(f"\nSaved to {out_path}")
 
     # Also save a compact PT-count JSON for the disproportionality pipeline
+    # (lowercase keys — previous version had an all-zero bug from mixed-case lookup)
     pt_json = {
         "source": "FAERS ASCII",
         "total_ps": total_ps,
-        "pt_counts": {pt: pt_counts.get(pt, 0) for pt in PULMONARY_PTS_LOWER},
+        "pt_counts": {pt.lower(): cnt for pt, cnt in pt_counts.items()},
     }
     pt_path = os.path.join(OUT_DIR, "olanzapine_ascii_pt_counts.json")
     with open(pt_path, "w", encoding="utf-8") as f:

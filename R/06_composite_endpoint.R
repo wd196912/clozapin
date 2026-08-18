@@ -189,20 +189,25 @@ two_by_two <- function(pt_set, cloz_ids, risp_ids, reac_raw) {
 
 # ---------- 验证闸门: 复现旧逐 PT 数字 ----------
 cat("\n=== 验证闸门: 旧 17 PT 数字复现 (vs clozapine_lung_signal_detection.csv) ===\n")
-old_csv <- fread(file.path(data_dir, "clozapine_lung_signal_detection.csv"))
-old_csv[, PT_l := tolower(trimws(PT_Term))]
-gate_ok <- TRUE
-for (i in seq_len(nrow(old_csv))) {
-  p <- old_csv$PT_l[i]
-  tt <- two_by_two(p, cloz_ids, risp_ids, reac_raw)
-  exp_a <- old_csv$Clozapine_Event[i]; exp_c <- old_csv$Risperidone_Event[i]
-  ok <- (tt$a == exp_a) && (tt$c == exp_c)
-  if (!ok) gate_ok <- FALSE
-  cat(sprintf("  %-40s a=%d(%d) c=%d(%d) %s\n", p, tt$a, exp_a, tt$c, exp_c,
-              ifelse(ok, "OK", "MISMATCH")))
+gate_file <- file.path(data_dir, "clozapine_lung_signal_detection.csv")
+if (!file.exists(gate_file)) {
+  cat("  闸门文件未找到; 先运行 01_signal_detection.R 生成该文件, 本次跳过复现验证\n")
+} else {
+  old_csv <- fread(gate_file)
+  old_csv[, PT_l := tolower(trimws(PT_Term))]
+  gate_ok <- TRUE
+  for (i in seq_len(nrow(old_csv))) {
+    p <- old_csv$PT_l[i]
+    tt <- two_by_two(p, cloz_ids, risp_ids, reac_raw)
+    exp_a <- old_csv$Clozapine_Event[i]; exp_c <- old_csv$Risperidone_Event[i]
+    ok <- (tt$a == exp_a) && (tt$c == exp_c)
+    if (!ok) gate_ok <- FALSE
+    cat(sprintf("  %-40s a=%d(%d) c=%d(%d) %s\n", p, tt$a, exp_a, tt$c, exp_c,
+                ifelse(ok, "OK", "MISMATCH")))
+  }
+  stopifnot(gate_ok)
+  cat("  17 PT 复现: ALL OK\n")
 }
-stopifnot(gate_ok)
-cat("  17 PT 复现: ALL OK\n")
 
 # ---------- 新规则信号分析 ----------
 cat("\n=== 新规则信号分析 (clozapine vs risperidone) ===\n")

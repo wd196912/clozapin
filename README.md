@@ -2,7 +2,7 @@
 
 R analysis code for the manuscript:
 
-**Pneumonia and Fatal Outcomes Associated with Clozapine: A Pharmacovigilance Study Using the FDA Adverse Event Reporting System** (manuscript version v12, composite-endpoint revision, 2026-08-18)
+**Pulmonary Infections and Fatal Outcomes Associated with Clozapine: A Pharmacovigilance Study Using the FDA Adverse Event Reporting System** (manuscript version v12, composite-endpoint revision, 2026-08-18)
 
 ## Repository Contents
 

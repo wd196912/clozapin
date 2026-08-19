@@ -277,12 +277,12 @@ cat(sprintf("Crude Europe OR = %.3f; chisq p = %.4f\n",
             (eur_tab[2,2]*eur_tab[1,1])/(eur_tab[1,2]*eur_tab[2,1]),
             chisq.test(eur_tab)$p.value))
 
-# ---- Calibration plot (Supplementary Figure S2) ----
+# ---- Calibration plot (Supplementary Figure S1) ----
 m4_main <- glm(is_fatal ~ age_num + sex_bin + aspiration + region_eur + event_year,
                data = md, family = binomial)
 pred <- predict(m4_main, type = "response")
 obs <- m4_main$y
-png("F:/clazpin/manuscript/analysis/figures/figS2_calibration.png",
+png("F:/clazpin/manuscript/analysis/figures/figS1_calibration.png",
     width = 6.5, height = 6, units = "in", res = 300)
 plot(pred, jitter(as.numeric(obs), amount = 0.02), pch = 19, cex = 0.35, col = rgb(0,0,0,0.35),
      xlab = "Predicted probability of fatal outcome",
@@ -296,6 +296,6 @@ lines(px, predict(smo, newdata = data.frame(pred = px)), lwd = 2, col = "steelbl
 legend("topleft", legend = c("Ideal (45° line)", "Loess-smoothed observed"),
        col = c("grey50", "steelblue"), lty = c(2, 1), lwd = 2, bty = "n")
 dev.off()
-cat("\nCalibration plot written: figS2_calibration.png\n")
+cat("\nCalibration plot written: figS1_calibration.png\n")
 
 cat(sprintf("\nMICE version: %s\n", as.character(packageVersion("mice"))))

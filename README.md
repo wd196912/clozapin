@@ -76,3 +76,7 @@ Weidong Liu. *Pulmonary Infections and Fatal Outcomes Associated with Clozapine:
 ## License
 
 Research code for a public-data pharmacovigilance analysis. License: CC BY 4.0 (add a LICENSE file before release if desired).
+
+## Verified Run (2026-08-20)
+
+All six scripts were executed end-to-end (R 4.6.0, packages per `sessionInfo_2026-08-20.txt`; data at the paths above) and passed every internal gate: 44,055 clozapine / 15,130 risperidone primary-suspect reports, 1,305 pulmonary infection–related cases, 309 fatal outcomes; composite endpoint ROR 3.58 (95% CI 2.96–4.34), IC₀₂₅ 0.168. Key outputs are archived in `results/` (composite-endpoint signal table and principal-diagnosis Table 1 rows). Reproduce with: `Rscript R/01_signal_detection.R` … `Rscript R/06_composite_endpoint.R` (run in numeric order).

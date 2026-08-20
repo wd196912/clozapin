@@ -58,3 +58,21 @@ Adjust `data_dir` / `qdir` (and any `out_dir` / `output_dir`) at the top of each
 - Denominators: clozapine PS 45,749 DRUG records → 44,055 unique reports; risperidone 15,130; olanzapine 13,691 (report level; from the same ASCII quarters); clozapine pulmonary-infection cases 1,305; risperidone 119.
 - Composite endpoint vs risperidone: 1,177 vs 115 events; ROR 3.58 (95% CI 2.96–4.34); PRR 3.51 (2.91–4.25); IC₀₂₅ 0.168 — **Positive**. Pneumonia spectrum: 963 vs 114; ROR 2.94 (2.42–3.58) — **Positive**. Pneumonia: 723 vs 75; ROR 3.35 (2.64–4.25) — **Positive**. Pneumonia aspiration: 209 vs 40; ROR 1.80 (1.28–2.52); IC₀₂₅ −0.112 — not positive. Lower respiratory tract infection: 237 vs 1 — ROR not reported (IC 0.419, IC₀₂₅ 0.138); the raw per-term estimate (ROR 81.83) is retained only as an example of small-denominator instability.
 - Fatal analysis: 309/1,305 (23.7%); multivariable model m4: age OR 1.90 (95% CI 1.64–2.19), aspiration pneumonia OR 2.40 (1.58–3.66); C-statistic 0.774 (0.735–0.812); Hosmer-Lemeshow χ² = 11.38, df = 8, p = 0.181.
+
+## Citation
+
+Weidong Liu. *Pulmonary Infections and Fatal Outcomes Associated with Clozapine: A Pharmacovigilance Study Using the FDA Adverse Event Reporting System.* Analysis code repository, 2026. DOI: `10.5281/zenodo.<ID>` (assigned after Zenodo archive).
+
+```bibtex
+@misc{liu2026clozapine,
+  author = {Liu, Weidong},
+  title = {Pulmonary Infections and Fatal Outcomes Associated with Clozapine: A Pharmacovigilance Study Using the FDA Adverse Event Reporting System},
+  year = {2026},
+  howpublished = {\url{https://github.com/wd196912/clozapin}},
+  note = {Analysis code for the FAERS clozapine pulmonary-infection pharmacovigilance study}
+}
+```
+
+## License
+
+Research code for a public-data pharmacovigilance analysis. License: CC BY 4.0 (add a LICENSE file before release if desired).

@@ -1,0 +1,35 @@
+# CITATION.cff — draft for https://github.com/wd196912/clozapin
+# Instructions: (1) replace the authors placeholder with the full author list + ORCIDs;
+# (2) after enabling GitHub–Zenodo and creating a release, fill `doi` and `date-released`;
+# (3) confirm the license before upload; (4) push to the repo root.
+
+cff-version: 1.2.0
+message: "If you use this code or the associated manuscript, please cite it as below."
+title: "Pulmonary Infections and Fatal Outcomes Associated with Clozapine: A Pharmacovigilance Study Using the FDA Adverse Event Reporting System"
+abstract: >-
+  Retrospective pharmacovigilance study of FAERS 2022Q1–2025Q4 (44,055 clozapine primary-suspect
+  reports; 1,305 pulmonary infection–related cases; 309 fatal outcomes, 23.7%). Composite
+  pulmonary infection endpoint showed a positive disproportionality signal vs risperidone
+  (ROR 3.58; 95% CI 2.96–4.34; IC025 0.168), attenuated with olanzapine comparator; older age
+  (aOR 1.90 per 10 years) and aspiration pneumonia (aOR 2.40) were fatal-outcome predictors;
+  threshold-like dose–response above ~500 mg/d was exploratory.
+keywords:
+  - clozapine
+  - pneumonia
+  - aspiration pneumonia
+  - pharmacovigilance
+  - FAERS
+  - disproportionality analysis
+  - adverse drug reaction reporting systems
+  - dose-response relationship
+license: "CC-BY-4.0"   # TODO: confirm the license you will publish under
+authors:
+  # Author list verified from the ORCID record provided by the user (0009-0000-3131-4414).
+  # ADD any co-authors here before the final release if the manuscript has more than one author.
+  - family-names: "Liu"
+    given-names: "Weidong"
+    orcid: "https://orcid.org/0009-0000-3131-4414"
+version: "1.0.0"       # TODO: bump when the GitHub release is created
+date-released: "2026-08-20"   # TODO: set to the release date
+repository-code: "https://github.com/wd196912/clozapin"
+doi: "10.5281/zenodo.<ID>"    # TODO: fill after GitHub–Zenodo archive (see aio-upload-checklist.md)

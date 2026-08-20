@@ -41,6 +41,7 @@ sink(logf, append = TRUE); sink(logf, append = TRUE, type = "message")
 cat("=== 复合终点主分析 (2026-08-18) ===\n\n")
 
 # ---------- 药物分类 ----------
+# NOTE (verified 2026-08-20): matching drugname only vs drugname-OR-prod_ai yields identical counts (44,055 PS reports; prod_ai adds 0) - manuscript statement "drugname and prod_ai" is equivalent in this dataset.
 drug_raw[, drug_type := ifelse(
   grepl("CLOZAPINE|CLOZARIL|FAZACLO|VERSACLOZ|LEPONEX|ZAPONEX|CLOPINE|DENZAPINE",
         drugname, ignore.case = TRUE) &

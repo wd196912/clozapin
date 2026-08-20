@@ -1,7 +1,7 @@
-# CITATION.cff — draft for https://github.com/wd196912/clozapin
-# Instructions: (1) replace the authors placeholder with the full author list + ORCIDs;
-# (2) after enabling GitHub–Zenodo and creating a release, fill `doi` and `date-released`;
-# (3) confirm the license before upload; (4) push to the repo root.
+# CITATION.cff — https://github.com/wd196912/clozapin
+# Before the final release: (1) add any co-authors and their ORCIDs;
+# (2) after enabling GitHub–Zenodo and creating a release, fill `doi` and update `date-released`;
+# (3) confirm the license; (4) keep this file at the repo root.
 
 cff-version: 1.2.0
 message: "If you use this code or the associated manuscript, please cite it as below."
